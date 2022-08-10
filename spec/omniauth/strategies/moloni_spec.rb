@@ -76,10 +76,10 @@ describe OmniAuth::Strategies::Moloni do
       expect(subject.raw_info).to eq(parsed_response)
     end
 
-    it 'should use the header auth mode' do
+    it 'should use the query auth mode' do
       expect(access_token).to receive(:get).with(moloni_user_path).and_return(response)
       subject.raw_info
-      expect(access_token.options[:mode]).to eq(:header)
+      expect(access_token.options[:mode]).to eq(:query)
     end
   end
 

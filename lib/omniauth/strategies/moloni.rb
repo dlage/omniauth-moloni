@@ -4,23 +4,15 @@ module OmniAuth
   module Strategies
     class Moloni < OmniAuth::Strategies::OAuth2
       option :client_options, {
-        :site => 'https://api.moloni.pt/v1/',
-        :authorize_url => 'https://api.moloni.pt/v1/authorize/',
-        :token_url => 'https://api.moloni.pt/v1/grant/'
+        site: 'https://api.moloni.pt/v1/',
+        authorize_url: 'https://api.moloni.pt/v1/authorize/',
+        token_url: 'https://api.moloni.pt/v1/grant/',
+        token_method: :get
       }
 
-      def request_phase
-        super
-      end
-
-      def authorize_params
-        super.tap do |params|
-          %w[client_options].each do |v|
-            if request.params[v]
-              params[v.to_sym] = request.params[v]
-            end
-          end
-        end
+      # Moloni does not allow even different query params, even if with the same base URI
+      def callback_url
+        full_host + callback_path
       end
 
       uid { raw_info['user_id'].to_s }
@@ -42,20 +34,12 @@ module OmniAuth
       end
 
       def raw_info
-        access_token.options[:mode] = :header
+        access_token.options[:mode] = :query
         @raw_info ||= access_token.get('users/getMe/').parsed
       end
 
       def email
         raw_info['email']
-      end
-
-      def scope
-        access_token['scope']
-      end
-
-      def callback_url
-        full_host + callback_path
       end
     end
   end
