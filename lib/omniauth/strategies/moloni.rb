@@ -3,6 +3,10 @@ require 'omniauth-oauth2'
 module OmniAuth
   module Strategies
     class Moloni < OmniAuth::Strategies::OAuth2
+      # Moloni does not return the state param in the callback redirect,
+      # so the omniauth-oauth2 state check must be skipped.
+      option :provider_ignores_state, true
+
       option :client_options, {
         site: 'https://api.moloni.pt/v1/',
         authorize_url: 'https://api.moloni.pt/v1/authorize/',
